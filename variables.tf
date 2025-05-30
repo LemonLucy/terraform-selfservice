@@ -15,3 +15,11 @@ variable "aws_region" {
   type    = string
   default = "ap-northeast-2"
 }
+
+variable "ecr_repo_name" {}
+variable "service_name" {}
+variable "github_owner" {}
+variable "github_repo" {}
+variable "github_token" {}
+variable "app_repo_url" {}
+variable "s3_bucket" {}
