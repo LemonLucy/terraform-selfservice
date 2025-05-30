@@ -159,6 +159,12 @@ resource "aws_iam_policy" "codepipeline_custom_policy" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "codepipeline_custom_attach" {
+  role       = aws_iam_role.codepipeline_role.name
+  policy_arn = aws_iam_policy.codepipeline_custom_policy.arn
+}
+
+
 resource "aws_s3_bucket_policy" "allow_pipeline_access" {
   bucket = aws_s3_bucket.codepipeline_artifacts.id
 
