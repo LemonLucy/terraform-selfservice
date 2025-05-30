@@ -132,7 +132,29 @@ resource "aws_iam_role" "codepipeline_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "codepipeline_policy_attach" {
-  role       = aws_iam_role.codepipeline_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipelineServiceRole"
+resource "aws_iam_policy" "codepipeline_custom_policy" {
+  name = "codepipeline-custom-policy-${random_id.suffix.hex}"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "codebuild:BatchGetBuilds",
+          "codebuild:StartBuild",
+          "codecommit:GitPull",
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplicationRevision",
+          "codedeploy:RegisterApplicationRevision",
+          "codedeploy:GetDeployment",
+          "iam:PassRole"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
 }
