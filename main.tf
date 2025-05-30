@@ -11,7 +11,7 @@ provider "aws" {
 }
 # 2. ECR 생성 (도커 이미지 저장소)
 resource "aws_ecr_repository" "app_repo" {
-  name = var.ecr_repo_name
+  name = "${var.ecr_repo_name}-${var.service_name}"
 }
 
 # 3. CodeBuild 프로젝트
@@ -86,12 +86,12 @@ resource "random_id" "bucket_suffix" {
 }
 
 resource "aws_s3_bucket" "codepipeline_artifacts" {
-  bucket        = "${var.service_name}-artifacts-${random_id.bucket_suffix.hex}"
+  bucket        = "${var.service_name}-artifacts"
   force_destroy = true
 }
 
 resource "aws_iam_role" "codebuild_role" {
-  name = "codebuild-service-role"
+  name = "codebuild-role-${var.service_name}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -113,7 +113,8 @@ resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name = "codepipeline-service-role"
+  name = "codepipeline-role-${var.service_name}"
+
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

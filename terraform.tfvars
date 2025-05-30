@@ -5,7 +5,7 @@ instance_type  = "t3.micro"
 aws_region     = "ap-northeast-2"
 
 ecr_repo_name   = "my-node-ecr"
-service_name    = "selfservice"
+service_name    = "selfservice-${timestamp}"
 github_owner    = "LemonLucy"
 github_repo     = "terraform-selfservice"
 app_repo_url    = "https://github.com/LemonLucy/terraform-selfservice.git"
