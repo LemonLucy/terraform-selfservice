@@ -1,8 +1,12 @@
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
 resource "aws_instance" "example" {
   ami           = var.ami_id
   instance_type = var.instance_type
   tags = {
-    Name = var.instance_name
+    Name = "${var.instance_name}-${random_id.suffix.hex}"
   }
 }
 
@@ -11,11 +15,11 @@ provider "aws" {
 }
 
 resource "aws_ecr_repository" "app_repo" {
-  name = "${var.ecr_repo_name}-${var.service_name}"
+  name = "${var.ecr_repo_name}-${random_id.suffix.hex}"
 }
 
 resource "aws_codebuild_project" "app_build" {
-  name         = "build-${var.service_name}"
+  name         = "build-${random_id.suffix.hex}"
   service_role = aws_iam_role.codebuild_role.arn
 
   source {
@@ -41,7 +45,7 @@ resource "aws_codebuild_project" "app_build" {
 }
 
 resource "aws_codepipeline" "pipeline" {
-  name     = "pipeline-${var.service_name}"
+  name     = "pipeline-${random_id.suffix.hex}"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
@@ -84,17 +88,13 @@ resource "aws_codepipeline" "pipeline" {
   }
 }
 
-resource "random_id" "bucket_suffix" {
-  byte_length = 4
-}
-
 resource "aws_s3_bucket" "codepipeline_artifacts" {
-  bucket        = "${var.service_name}-artifacts"
+  bucket        = "artifacts-${random_id.suffix.hex}"
   force_destroy = true
 }
 
 resource "aws_iam_role" "codebuild_role" {
-  name = "codebuild-role-${var.service_name}"
+  name = "codebuild-role-${random_id.suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -116,7 +116,7 @@ resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name = "codepipeline-role-${var.service_name}"
+  name = "codepipeline-role-${random_id.suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
