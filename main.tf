@@ -25,6 +25,7 @@ resource "aws_codebuild_project" "app_build" {
   source {
     type     = "GITHUB"
     location = var.app_repo_url
+    buildspec = "buildspec.yml"
   }
 
   artifacts {
@@ -112,7 +113,11 @@ resource "aws_iam_role" "codebuild_role" {
 
 resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
   role       = aws_iam_role.codebuild_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+resource "aws_iam_role_policy_attachment" "codebuild_s3_readonly_attach" {
+  role       = aws_iam_role.codebuild_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
 resource "aws_iam_role" "codepipeline_role" {
@@ -132,7 +137,57 @@ resource "aws_iam_role" "codepipeline_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "codepipeline_policy_attach" {
+resource "aws_iam_policy" "codepipeline_custom_policy" {
+  name = "codepipeline-custom-policy-${random_id.suffix.hex}"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "codebuild:BatchGetBuilds",
+          "codebuild:StartBuild",
+          "codecommit:GitPull",
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplicationRevision",
+          "codedeploy:RegisterApplicationRevision",
+          "codedeploy:GetDeployment",
+          "iam:PassRole"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_custom_attach" {
   role       = aws_iam_role.codepipeline_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_ReadOnlyAccess"
+  policy_arn = aws_iam_policy.codepipeline_custom_policy.arn
+}
+
+
+resource "aws_s3_bucket_policy" "allow_pipeline_access" {
+  bucket = aws_s3_bucket.codepipeline_artifacts.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowCodePipelineAccess",
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.codepipeline_role.arn
+        },
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource = "arn:aws:s3:::${aws_s3_bucket.codepipeline_artifacts.bucket}/*"
+      }
+    ]
+  })
 }
