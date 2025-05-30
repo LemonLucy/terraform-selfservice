@@ -1,0 +1,20 @@
+{
+  "name": "terraform-selfservice",
+  "version": "1.0.0",
+  "description": "\"# terraform-selfservice\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LemonLucy/terraform-selfservice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LemonLucy/terraform-selfservice/issues"
+  },
+  "homepage": "https://github.com/LemonLucy/terraform-selfservice#readme"
+}
