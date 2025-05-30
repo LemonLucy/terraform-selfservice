@@ -114,6 +114,10 @@ resource "aws_iam_role_policy_attachment" "codebuild_policy_attach" {
   role       = aws_iam_role.codebuild_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
+resource "aws_iam_role_policy_attachment" "codebuild_s3_readonly_attach" {
+  role       = aws_iam_role.codebuild_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
 
 resource "aws_iam_role" "codepipeline_role" {
   name = "codepipeline-role-${random_id.suffix.hex}"
