@@ -25,6 +25,7 @@ resource "aws_codebuild_project" "app_build" {
   source {
     type     = "GITHUB"
     location = var.app_repo_url
+    buildspec = "buildspec.yml"
   }
 
   artifacts {
