@@ -191,3 +191,29 @@ resource "aws_s3_bucket_policy" "allow_pipeline_access" {
     ]
   })
 }
+resource "aws_iam_policy" "codebuild_s3_policy" {
+  name = "codebuild-s3-access-${random_id.suffix.hex}"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:GetBucketLocation"
+        ],
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.codepipeline_artifacts.bucket}",
+          "arn:aws:s3:::${aws_s3_bucket.codepipeline_artifacts.bucket}/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_s3_policy_attach" {
+  role       = aws_iam_role.codebuild_role.name
+  policy_arn = aws_iam_policy.codebuild_s3_policy.arn
+}
