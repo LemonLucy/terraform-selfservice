@@ -158,3 +158,25 @@ resource "aws_iam_policy" "codepipeline_custom_policy" {
     ]
   })
 }
+
+resource "aws_s3_bucket_policy" "allow_pipeline_access" {
+  bucket = aws_s3_bucket.codepipeline_artifacts.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowCodePipelineAccess",
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.codepipeline_role.arn
+        },
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource = "arn:aws:s3:::${aws_s3_bucket.codepipeline_artifacts.bucket}/*"
+      }
+    ]
+  })
+}
