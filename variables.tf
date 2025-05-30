@@ -22,4 +22,3 @@ variable "github_owner" {}
 variable "github_repo" {}
 variable "github_token" {}
 variable "app_repo_url" {}
-variable "s3_bucket" {}
