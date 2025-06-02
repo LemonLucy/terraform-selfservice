@@ -1,5 +1,5 @@
 
-eks_cluster_name = "my-selfservice-eks-1748828471084"
-aws_region       = "ap-northeast-2"
-node_instance_type = "t3.medium"
-desired_capacity = 2
+ami_id         = "ami-0c9c942bd7bf113a2"
+instance_name  = "my-selfservice-ec2-1748828471589"
+instance_type  = "t3.micro"
+aws_region     = "ap-northeast-2"
